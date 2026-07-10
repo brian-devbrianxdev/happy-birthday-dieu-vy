@@ -125,19 +125,35 @@
   }
 
   /* ── scene 2: cake ─────────────────────────────── */
+  .cake-wrap { position: relative; display: inline-block; padding: 0 34px; }
+
   .flames {
-    height: 30px; font-size: 24px; letter-spacing: 6px;
-    transition: opacity .5s;
+    height: 34px; font-size: 26px; letter-spacing: 6px;
     margin-top: 14px;
   }
-  .flames span { display: inline-block; animation: flicker .35s ease-in-out infinite alternate; }
-  .flames span:nth-child(2) { animation-delay: .12s; }
-  .flames span:nth-child(3) { animation-delay: .24s; }
+  .candle-e {
+    position: relative; display: inline-block;
+    animation: flicker .35s ease-in-out infinite alternate;
+    transition: filter .4s, opacity .4s;
+  }
+  .candle-e:nth-child(2) { animation-delay: .12s; }
+  .candle-e:nth-child(3) { animation-delay: .24s; }
   @keyframes flicker {
     from { transform: scaleY(1) translateY(0); }
     to   { transform: scaleY(1.25) translateY(-3px); }
   }
-  .flames.out { opacity: 0; }
+  .candle-e.out { animation: none; filter: grayscale(1); opacity: .45; }
+
+  .smoke {
+    position: absolute; left: 50%; bottom: 85%;
+    font-size: 16px; font-style: normal;
+    opacity: 0; pointer-events: none;
+  }
+  .candle-e.out .smoke { animation: smokeUp 1.5s ease-out forwards; }
+  @keyframes smokeUp {
+    0%   { opacity: .95; transform: translate(-50%, 0) scale(.5); }
+    100% { opacity: 0; transform: translate(-80%, -48px) scale(1.6) rotate(-18deg); }
+  }
 
   .cake {
     font-size: 100px;
@@ -148,8 +164,63 @@
   }
   .cake:hover { transform: scale(1.1) rotate(-3deg); }
   .cake:active { transform: scale(.94); }
+  .cake.wobble { animation: cakeWobble .7s ease-in-out; }
+  @keyframes cakeWobble {
+    0%, 100% { transform: rotate(0) scale(1); }
+    25% { transform: rotate(-6deg) scale(1.05); }
+    50% { transform: rotate(5deg) scale(1.02); }
+    75% { transform: rotate(-3deg); }
+  }
+  .cake.shake { animation: cakeShake .55s ease-in-out; }
+  @keyframes cakeShake {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    20% { transform: translateX(-7px) rotate(-2deg); }
+    40% { transform: translateX(7px) rotate(2deg); }
+    60% { transform: translateX(-5px) rotate(-1deg); }
+    80% { transform: translateX(5px) rotate(1deg); }
+  }
 
-  .hint { margin-top: 12px; font-size: 15px; color: #c98bab; font-weight: 600; }
+  .knife {
+    position: absolute; top: 4px; right: -18px;
+    font-size: 54px; opacity: 0;
+    pointer-events: none; z-index: 5;
+    transform: rotate(-30deg);
+  }
+  .knife.chop { animation: chop 1.5s ease-in-out forwards; }
+  @keyframes chop {
+    0%   { opacity: 0; transform: translate(36px, -60px) rotate(-30deg); }
+    15%  { opacity: 1; transform: translate(8px, -26px) rotate(-45deg); }
+    35%  { transform: translate(-14px, 62px) rotate(-100deg); }
+    50%  { transform: translate(4px, 4px) rotate(-60deg); }
+    68%  { transform: translate(-14px, 62px) rotate(-100deg); }
+    85%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(28px, -34px) rotate(-30deg); }
+  }
+
+  .slice {
+    position: absolute; left: 50%; bottom: 24px;
+    font-size: 48px; opacity: 0;
+    pointer-events: none; z-index: 6;
+    filter: drop-shadow(0 6px 10px rgba(255, 105, 180, .35));
+  }
+  .slice.fly { animation: sliceFly 1.15s cubic-bezier(.3, .8, .4, 1) forwards; }
+  @keyframes sliceFly {
+    0%   { opacity: 0; transform: translate(-50%, 0) scale(.3) rotate(0); }
+    30%  { opacity: 1; transform: translate(0, -75px) scale(1.05) rotate(16deg); }
+    100% { opacity: 1; transform: translate(78px, 14px) scale(1.1) rotate(-6deg); }
+  }
+
+  .spark {
+    position: absolute; z-index: 7;
+    pointer-events: none; font-size: 19px;
+    animation: sparkPop 1s ease-out forwards;
+  }
+  @keyframes sparkPop {
+    0%   { opacity: 1; transform: translate(0, 0) scale(.4); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.35); }
+  }
+
+  .hint { margin-top: 12px; font-size: 15px; color: #c98bab; font-weight: 600; min-height: 24px; }
 
   /* ── scene 3: letter ───────────────────────────── */
   .letter-head { font-size: 54px; animation: wiggle 2s ease-in-out infinite; display: inline-block; }
@@ -256,10 +327,17 @@
     <div class="step-dots">○ <b>●</b> ○ ○</div>
     <h1>Happy Birthday!</h1>
     <p class="sub">Trước tiên phải làm thủ tục quan trọng nhất:<br><b style="color:#ff4f9a">nhắm mắt, ước một điều ước</b> 🙏 rồi…</p>
-    <div class="flames" id="flames"><span>🕯️</span><span>🕯️</span><span>🕯️</span></div>
-    <div class="cake" id="cake" title="Thổi nến nào!">🎂</div>
+    <div class="cake-wrap" id="cakeWrap">
+      <div class="flames">
+        <span class="candle-e">🕯️<i class="smoke">💨</i></span><span class="candle-e">🕯️<i class="smoke">💨</i></span><span class="candle-e">🕯️<i class="smoke">💨</i></span>
+      </div>
+      <div class="cake" id="cake" title="Thổi nến nào!">🎂</div>
+      <div class="knife" id="knife">🔪</div>
+      <div class="slice" id="slice">🍰</div>
+    </div>
     <div class="hint" id="cakeHint">👆 Chạm vào bánh để thổi nến!</div>
-    <button class="btn hidden" id="toLetter">Nến tắt rồi, mở thư thôi 💌</button>
+    <button class="btn hidden" id="cutBtn">🔪 Cắt bánh nào!</button>
+    <button class="btn hidden" id="toLetter">Mở thư thôi 💌</button>
   </section>
 
   <!-- ── Bước 3: Bức thư ─────────────────────────── -->
@@ -364,22 +442,73 @@
     goTo('scene2');
   });
 
-  // step 2: blow candles, then → 3
+  // step 2: blow candles (one by one), cut the cake, then → 3
+  const cakeWrap = document.getElementById('cakeWrap');
   const cake = document.getElementById('cake');
-  const flames = document.getElementById('flames');
+  const candles = [...document.querySelectorAll('.candle-e')];
   const cakeHint = document.getElementById('cakeHint');
+  const cutBtn = document.getElementById('cutBtn');
   const toLetter = document.getElementById('toLetter');
+  const knife = document.getElementById('knife');
+  const slice = document.getElementById('slice');
   let blown = false;
+  let cutDone = false;
+
+  function sparkleBurst(emojis = ['✨', '⭐', '💫']) {
+    for (let i = 0; i < 7; i++) {
+      const s = document.createElement('div');
+      s.className = 'spark';
+      s.textContent = emojis[i % emojis.length];
+      s.style.left = rand(30, 70) + '%';
+      s.style.top = rand(20, 60) + '%';
+      s.style.setProperty('--dx', rand(-60, 60) + 'px');
+      s.style.setProperty('--dy', rand(-75, -25) + 'px');
+      cakeWrap.appendChild(s);
+      setTimeout(() => s.remove(), 1100);
+    }
+  }
 
   cake.addEventListener('click', () => {
     if (blown) return;
     blown = true;
-    flames.classList.add('out');
-    cakeHint.textContent = '💨 Fùuuu~ Điều ước sẽ thành sự thật! ✨';
-    burstConfetti(150);
-    setTimeout(() => { cake.textContent = '🍰'; }, 1000);
-    setTimeout(() => toLetter.classList.remove('hidden'), 900);
+    cake.classList.add('wobble');
+    setTimeout(() => cake.classList.remove('wobble'), 750);
+    candles.forEach((c, i) => setTimeout(() => {
+      c.classList.add('out');
+      const left = candles.length - 1 - i;
+      cakeHint.textContent = left > 0
+        ? `💨 Fù~ còn ${left} ngọn nến nữa!`
+        : '🌟 Nến tắt hết rồi! Điều ước sẽ thành sự thật! ✨';
+    }, i * 450));
+    setTimeout(() => {
+      sparkleBurst();
+      burstConfetti(150);
+      cutBtn.classList.remove('hidden');
+    }, candles.length * 450 + 300);
   });
+
+  cutBtn.addEventListener('click', () => {
+    if (cutDone) return;
+    cutDone = true;
+    cutBtn.classList.add('hidden');
+    cakeHint.textContent = '🔪 Xoẹt xoẹt…';
+    knife.classList.add('chop');
+    setTimeout(() => {
+      cake.classList.add('shake');
+      setTimeout(() => cake.classList.remove('shake'), 600);
+    }, 450);
+    setTimeout(() => {
+      cake.textContent = '🍰';
+      slice.classList.add('fly');
+      sparkleBurst(['💖', '✨', '🩷']);
+    }, 1000);
+    setTimeout(() => {
+      cakeHint.textContent = 'Miếng đầu tiên là dành cho Vy đó 🍰💖';
+      burstConfetti(100);
+      toLetter.classList.remove('hidden');
+    }, 1750);
+  });
+
   toLetter.addEventListener('click', () => {
     goTo('scene3');
     revealNextPara();
@@ -431,9 +560,13 @@
   document.getElementById('partyBtn').addEventListener('click', () => shootConfetti(160));
   document.getElementById('replayBtn').addEventListener('click', () => {
     blown = false;
+    cutDone = false;
     cake.textContent = '🎂';
-    flames.classList.remove('out');
+    candles.forEach(c => c.classList.remove('out'));
+    knife.classList.remove('chop');
+    slice.classList.remove('fly');
     cakeHint.textContent = '👆 Chạm vào bánh để thổi nến!';
+    cutBtn.classList.add('hidden');
     toLetter.classList.add('hidden');
     paraIdx = 0;
     paras.forEach(p => p.classList.remove('show'));
