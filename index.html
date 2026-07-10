@@ -135,7 +135,7 @@
   .candle-e {
     position: relative; display: inline-block;
     animation: flicker .35s ease-in-out infinite alternate;
-    transition: filter .4s, opacity .4s;
+    transition: filter .8s, opacity .8s;
   }
   .candle-e:nth-child(2) { animation-delay: .12s; }
   .candle-e:nth-child(3) { animation-delay: .24s; }
@@ -150,7 +150,7 @@
     font-size: 16px; font-style: normal;
     opacity: 0; pointer-events: none;
   }
-  .candle-e.out .smoke { animation: smokeUp 1.5s ease-out forwards; }
+  .candle-e.out .smoke { animation: smokeUp 2.2s ease-out forwards; }
   @keyframes smokeUp {
     0%   { opacity: .95; transform: translate(-50%, 0) scale(.5); }
     100% { opacity: 0; transform: translate(-80%, -48px) scale(1.6) rotate(-18deg); }
@@ -423,9 +423,9 @@
     }
   }
 
-  cake.addEventListener('click', () => {
-    if (blown) return;
-    blown = true;
+  const BLOW_GAP = 1000;
+
+  function startBlowing() {
     cake.classList.add('wobble');
     setTimeout(() => cake.classList.remove('wobble'), 750);
     candles.forEach((c, i) => setTimeout(() => {
@@ -434,12 +434,20 @@
       cakeHint.textContent = left > 0
         ? `💨 Fù~ còn ${left} ngọn nến nữa!`
         : '🌟 Nến tắt hết rồi! Điều ước sẽ thành sự thật! ✨';
-    }, i * 450));
+    }, i * BLOW_GAP));
     setTimeout(() => {
       sparkleBurst();
       burstConfetti(150);
       toLetter.classList.remove('hidden');
-    }, candles.length * 450 + 300);
+    }, (candles.length - 1) * BLOW_GAP + 1000);
+  }
+
+  cake.addEventListener('click', () => {
+    if (blown) return;
+    blown = true;
+    const counts = ['Đếm nè… 1️⃣', '1️⃣… 2️⃣', '1️⃣… 2️⃣… 3️⃣ Fùuuu 💨'];
+    counts.forEach((t, i) => setTimeout(() => { cakeHint.textContent = t; }, i * 800));
+    setTimeout(startBlowing, counts.length * 800 + 200);
   });
 
   toLetter.addEventListener('click', () => {
