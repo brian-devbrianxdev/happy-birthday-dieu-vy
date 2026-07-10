@@ -227,6 +227,17 @@
   }
   @keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); } }
 
+  .confetti-up {
+    position: fixed; width: 12px; height: 12px; bottom: -20px;
+    z-index: 50; pointer-events: none;
+    animation: confettiShoot ease-out forwards;
+  }
+  @keyframes confettiShoot {
+    0%   { transform: translate(0, 0) rotate(0); opacity: 1; }
+    55%  { transform: translate(calc(var(--dx) * .75), var(--dy)) rotate(420deg); opacity: 1; }
+    100% { transform: translate(var(--dx), calc(var(--dy) + 55vh)) rotate(780deg); opacity: 0; }
+  }
+
   .footer {
     position: relative; z-index: 10;
     margin-top: 24px;
@@ -404,8 +415,27 @@
     }
   });
 
+  // confetti cannons: shoot up from the two bottom corners
+  function shootConfetti(count = 140) {
+    for (let i = 0; i < count; i++) {
+      const fromLeft = i % 2 === 0;
+      const c = document.createElement('div');
+      c.className = 'confetti-up';
+      c.style.left = fromLeft ? rand(2, 18) + 'vw' : rand(82, 98) + 'vw';
+      c.style.background = confettiColors[Math.floor(rand(0, confettiColors.length))];
+      c.style.width = c.style.height = rand(7, 14) + 'px';
+      c.style.borderRadius = Math.random() > .5 ? '50%' : '3px';
+      c.style.setProperty('--dx', (fromLeft ? 1 : -1) * rand(5, 60) + 'vw');
+      c.style.setProperty('--dy', '-' + rand(45, 100) + 'vh');
+      c.style.animationDuration = rand(2, 3.6) + 's';
+      c.style.animationDelay = rand(0, .6) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }
+  }
+
   // step 4
-  document.getElementById('partyBtn').addEventListener('click', () => burstConfetti(140));
+  document.getElementById('partyBtn').addEventListener('click', () => shootConfetti(160));
   document.getElementById('replayBtn').addEventListener('click', () => {
     blown = false;
     cake.textContent = '🎂';
