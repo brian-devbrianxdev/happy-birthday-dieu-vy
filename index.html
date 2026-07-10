@@ -181,21 +181,67 @@
   }
 
   .knife {
-    position: absolute; top: 4px; right: -18px;
+    position: absolute; top: 4px; right: -22px;
     font-size: 54px; opacity: 0;
     pointer-events: none; z-index: 5;
     transform: rotate(-30deg);
   }
-  .knife.chop { animation: chop 1.5s ease-in-out forwards; }
+  .knife.chop { animation: chop 2s cubic-bezier(.45, 0, .3, 1) forwards; }
   @keyframes chop {
-    0%   { opacity: 0; transform: translate(36px, -60px) rotate(-30deg); }
-    15%  { opacity: 1; transform: translate(8px, -26px) rotate(-45deg); }
-    35%  { transform: translate(-14px, 62px) rotate(-100deg); }
-    50%  { transform: translate(4px, 4px) rotate(-60deg); }
-    68%  { transform: translate(-14px, 62px) rotate(-100deg); }
-    85%  { opacity: 1; }
-    100% { opacity: 0; transform: translate(28px, -34px) rotate(-30deg); }
+    0%   { opacity: 0; transform: translate(56px, -80px) rotate(-20deg); }
+    12%  { opacity: 1; transform: translate(14px, -34px) rotate(-38deg); }
+    22%  { transform: translate(18px, -42px) rotate(-30deg); }
+    32%  { transform: translate(-12px, 58px) rotate(-95deg); }
+    38%  { transform: translate(-10px, 54px) rotate(-92deg); }
+    52%  { transform: translate(12px, -28px) rotate(-40deg); }
+    64%  { transform: translate(-16px, 60px) rotate(-98deg); }
+    70%  { transform: translate(-14px, 56px) rotate(-94deg); }
+    86%  { opacity: 1; transform: translate(20px, -40px) rotate(-30deg); }
+    100% { opacity: 0; transform: translate(56px, -80px) rotate(-20deg); }
   }
+
+  .cake.squish { animation: cakeSquish .32s ease-out; }
+  @keyframes cakeSquish {
+    0%, 100% { transform: scale(1, 1); }
+    45% { transform: scale(1.1, .82) translateY(6px); }
+  }
+
+  .slash {
+    position: absolute; left: 50%; top: 46%;
+    width: 4px; height: 82px;
+    margin-left: -2px;
+    background: linear-gradient(#fff, #ffd6e8, transparent);
+    border-radius: 4px;
+    opacity: 0; z-index: 6; pointer-events: none;
+    transform: rotate(14deg);
+  }
+  .slash.show { animation: slashFlash .3s ease-out; }
+  @keyframes slashFlash {
+    0%   { opacity: 0; transform: rotate(14deg) scaleY(.2); }
+    35%  { opacity: 1; transform: rotate(14deg) scaleY(1.05); }
+    100% { opacity: 0; transform: rotate(14deg) scaleY(1); }
+  }
+
+  .crumb {
+    position: absolute; z-index: 6; pointer-events: none;
+    width: 7px; height: 7px; border-radius: 50%;
+    animation: crumbFly .85s ease-out forwards;
+  }
+  @keyframes crumbFly {
+    0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.5); }
+  }
+
+  .mini-plate {
+    position: absolute; right: -48px; bottom: 10px;
+    width: 86px; height: 17px; border-radius: 50%;
+    background: linear-gradient(#fff, #ffd6e8);
+    box-shadow: 0 4px 10px rgba(255, 105, 180, .25);
+    opacity: 0; z-index: 4;
+    transition: opacity .45s, transform .45s;
+    transform: translateY(8px);
+  }
+  .mini-plate.show { opacity: 1; transform: translateY(0); }
 
   .slice {
     position: absolute; left: 50%; bottom: 24px;
@@ -203,11 +249,15 @@
     pointer-events: none; z-index: 6;
     filter: drop-shadow(0 6px 10px rgba(255, 105, 180, .35));
   }
-  .slice.fly { animation: sliceFly 1.15s cubic-bezier(.3, .8, .4, 1) forwards; }
+  .slice.fly { animation: sliceFly 1.5s cubic-bezier(.35, .7, .4, 1) forwards; }
   @keyframes sliceFly {
     0%   { opacity: 0; transform: translate(-50%, 0) scale(.3) rotate(0); }
-    30%  { opacity: 1; transform: translate(0, -75px) scale(1.05) rotate(16deg); }
-    100% { opacity: 1; transform: translate(78px, 14px) scale(1.1) rotate(-6deg); }
+    25%  { opacity: 1; transform: translate(-6px, -88px) scale(1.05) rotate(18deg); }
+    55%  { transform: translate(52px, -34px) scale(1.08) rotate(4deg); }
+    72%  { transform: translate(70px, 12px) scale(1.08) rotate(-6deg); }
+    82%  { transform: translate(72px, 2px) scale(1.05, 1.1) rotate(-4deg); }
+    92%  { transform: translate(73px, 12px) scale(1.1, 1) rotate(-5deg); }
+    100% { opacity: 1; transform: translate(73px, 10px) scale(1.08) rotate(-5deg); }
   }
 
   .spark {
@@ -333,6 +383,8 @@
       </div>
       <div class="cake" id="cake" title="Thổi nến nào!">🎂</div>
       <div class="knife" id="knife">🔪</div>
+      <div class="slash" id="slash"></div>
+      <div class="mini-plate" id="miniPlate"></div>
       <div class="slice" id="slice">🍰</div>
     </div>
     <div class="hint" id="cakeHint">👆 Chạm vào bánh để thổi nến!</div>
@@ -487,26 +539,53 @@
     }, candles.length * 450 + 300);
   });
 
+  const slash = document.getElementById('slash');
+  const miniPlate = document.getElementById('miniPlate');
+  const crumbColors = ['#ff9ecd', '#ffd6e8', '#ffdfa6', '#fff'];
+
+  function crumbBurst() {
+    for (let i = 0; i < 10; i++) {
+      const cr = document.createElement('div');
+      cr.className = 'crumb';
+      cr.style.background = crumbColors[i % crumbColors.length];
+      cr.style.left = rand(38, 62) + '%';
+      cr.style.top = rand(45, 65) + '%';
+      cr.style.setProperty('--dx', rand(-55, 55) + 'px');
+      cr.style.setProperty('--dy', rand(-60, -10) + 'px');
+      cakeWrap.appendChild(cr);
+      setTimeout(() => cr.remove(), 900);
+    }
+  }
+
+  function chopImpact() {
+    cake.classList.add('squish');
+    slash.classList.add('show');
+    crumbBurst();
+    setTimeout(() => {
+      cake.classList.remove('squish');
+      slash.classList.remove('show');
+    }, 380);
+  }
+
   cutBtn.addEventListener('click', () => {
     if (cutDone) return;
     cutDone = true;
     cutBtn.classList.add('hidden');
-    cakeHint.textContent = '🔪 Xoẹt xoẹt…';
+    cakeHint.textContent = '🔪 Nhắm kỹ nè…';
     knife.classList.add('chop');
-    setTimeout(() => {
-      cake.classList.add('shake');
-      setTimeout(() => cake.classList.remove('shake'), 600);
-    }, 450);
+    setTimeout(() => { chopImpact(); cakeHint.textContent = '🔪 Xoẹt~'; }, 640);
+    setTimeout(() => { chopImpact(); cakeHint.textContent = '🔪 Xoẹt xoẹt~'; }, 1280);
     setTimeout(() => {
       cake.textContent = '🍰';
+      miniPlate.classList.add('show');
       slice.classList.add('fly');
       sparkleBurst(['💖', '✨', '🩷']);
-    }, 1000);
+    }, 1750);
     setTimeout(() => {
       cakeHint.textContent = 'Miếng đầu tiên là dành cho Vy đó 🍰💖';
       burstConfetti(100);
       toLetter.classList.remove('hidden');
-    }, 1750);
+    }, 2900);
   });
 
   toLetter.addEventListener('click', () => {
@@ -565,6 +644,9 @@
     candles.forEach(c => c.classList.remove('out'));
     knife.classList.remove('chop');
     slice.classList.remove('fly');
+    slash.classList.remove('show');
+    miniPlate.classList.remove('show');
+    cake.classList.remove('squish');
     cakeHint.textContent = '👆 Chạm vào bánh để thổi nến!';
     cutBtn.classList.add('hidden');
     toLetter.classList.add('hidden');
