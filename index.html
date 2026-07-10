@@ -103,110 +103,25 @@
     line-height: 1.7;
   }
 
-  /* ── scene 1: gift (white box + pink ribbon) ───── */
-  .giftbox {
-    position: relative;
-    width: 160px;
-    height: 150px;
-    margin: 22px auto 8px;
+  /* ── scene 1: gift ─────────────────────────────── */
+  .gift {
+    font-size: 110px;
+    display: inline-block;
     cursor: pointer;
+    margin: 18px 0 6px;
     animation: shake 1.8s ease-in-out infinite;
+    filter: drop-shadow(0 10px 18px rgba(255, 105, 180, .35));
     transition: transform .2s;
   }
-  .giftbox:hover { transform: scale(1.08); }
-  .giftbox:active { transform: scale(.94); }
+  .gift:hover { transform: scale(1.1); }
+  .gift:active { transform: scale(.92); }
   @keyframes shake {
     0%, 55%, 100% { transform: rotate(0); }
-    60% { transform: rotate(-6deg) scale(1.03); }
-    65% { transform: rotate(6deg) scale(1.03); }
-    70% { transform: rotate(-4deg); }
-    75% { transform: rotate(4deg); }
+    60% { transform: rotate(-7deg) scale(1.04); }
+    65% { transform: rotate(7deg) scale(1.04); }
+    70% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
     80% { transform: rotate(0); }
-  }
-  .gift-base {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 122px; height: 90px;
-    background: #fff;
-    border: 2px solid #ffd6e8;
-    border-radius: 12px;
-    box-shadow: 0 12px 24px rgba(255, 105, 180, .25), inset 0 -8px 0 #fff0f6;
-  }
-  .gift-base::before {
-    content: ''; position: absolute; top: -2px; bottom: -2px; left: 50%;
-    transform: translateX(-50%); width: 24px;
-    background: linear-gradient(90deg, #ff9ecd, #ffb6d5, #ff9ecd);
-  }
-  .gift-lid {
-    position: absolute; top: 32px; left: 50%; transform: translateX(-50%);
-    width: 144px; height: 36px;
-    background: #fff;
-    border: 2px solid #ffd6e8;
-    border-radius: 12px;
-    box-shadow: 0 6px 14px rgba(255, 105, 180, .22);
-    z-index: 2;
-    transition: transform .4s cubic-bezier(.34, 1.4, .5, 1), opacity .4s;
-  }
-  .gift-lid::before {
-    content: ''; position: absolute; top: -2px; bottom: -2px; left: 50%;
-    transform: translateX(-50%); width: 24px;
-    background: linear-gradient(90deg, #ff9ecd, #ffb6d5, #ff9ecd);
-    border-radius: 4px;
-  }
-  .gift-bow {
-    position: absolute; bottom: calc(100% - 10px); left: 50%; transform: translateX(-50%);
-    font-size: 42px;
-    filter: drop-shadow(0 3px 6px rgba(255, 105, 180, .3));
-  }
-  .giftbox.open .gift-lid {
-    transform: translateX(-50%) translateY(-52px) rotate(-16deg);
-    opacity: 0;
-  }
-  .gift-glow {
-    position: absolute; top: 34px; left: 50%; transform: translateX(-50%) scale(0);
-    font-size: 34px; z-index: 1;
-    transition: transform .45s cubic-bezier(.18, 1.6, .4, 1);
-  }
-  .giftbox.open .gift-glow { transform: translateX(-50%) translateY(-34px) scale(1); }
-
-  /* ── chibi guide ───────────────────────────────── */
-  .chibi {
-    position: fixed; left: 14px; bottom: 12px;
-    z-index: 40;
-    display: flex; flex-direction: column; align-items: flex-start;
-    pointer-events: none;
-  }
-  .chibi-bubble {
-    background: #fff;
-    border: 2px solid #ffb6d5;
-    border-radius: 18px 18px 18px 4px;
-    padding: 8px 14px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #ff4f9a;
-    max-width: 200px;
-    line-height: 1.5;
-    box-shadow: 0 6px 14px rgba(255, 105, 180, .2);
-    margin-bottom: 4px;
-    margin-left: 34px;
-    animation: bubblePop .45s cubic-bezier(.18, 1.4, .4, 1) both;
-  }
-  @keyframes bubblePop {
-    from { transform: scale(.4); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-  .chibi-face {
-    font-size: 52px;
-    display: inline-block;
-    animation: chibiBob 1.6s ease-in-out infinite;
-    filter: drop-shadow(0 4px 8px rgba(255, 105, 180, .25));
-  }
-  @keyframes chibiBob {
-    0%, 100% { transform: translateY(0) rotate(-4deg); }
-    50%      { transform: translateY(-7px) rotate(4deg); }
-  }
-  @media (max-width: 640px) {
-    .chibi-face { font-size: 42px; }
-    .chibi-bubble { font-size: 13px; max-width: 160px; }
   }
 
   /* ── scene 2: cake ─────────────────────────────── */
@@ -364,11 +279,7 @@
     <div class="step-dots"><b>●</b> ○ ○ ○</div>
     <h1>Có một món quà nè…</h1>
     <div class="name">Diệu Vy 🌸</div>
-    <div class="giftbox" id="gift">
-      <div class="gift-glow">💖✨</div>
-      <div class="gift-lid"><div class="gift-bow">🎀</div></div>
-      <div class="gift-base"></div>
-    </div>
+    <div class="gift" id="gift">🎁</div>
     <p class="sub">Hình như bên trong có gì đó dễ thương lắm á 👀<br>Chạm vào hộp quà để mở nhaaa!</p>
   </section>
 
@@ -430,21 +341,8 @@
     <button class="btn ghost" id="replayBtn">↺ Xem lại từ đầu</button>
   </section>
 
-  <div class="chibi">
-    <div class="chibi-bubble" id="chibiBubble">Hí hí~ chạm vào hộp quà đi nè! 🎁</div>
-    <div class="chibi-face">🐰</div>
-  </div>
-
 <script>
   const rand = (min, max) => Math.random() * (max - min) + min;
-
-  const chibiBubble = document.getElementById('chibiBubble');
-  function chibiSay(text) {
-    chibiBubble.textContent = text;
-    chibiBubble.style.animation = 'none';
-    void chibiBubble.offsetWidth;
-    chibiBubble.style.animation = '';
-  }
 
   // background: falling hearts + balloons
   const fallEmojis = ['💖', '🌸', '✨', '💝', '🩷', '⭐', '🎀'];
@@ -496,20 +394,10 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // step 1 → 2: open gift (lid pops first)
-  const gift = document.getElementById('gift');
-  let opened = false;
-  gift.addEventListener('click', () => {
-    if (opened) return;
-    opened = true;
-    gift.classList.add('open');
-    gift.style.animation = 'none';
-    chibiSay('Oaaa mở ra rồi!! 🥳');
-    setTimeout(() => {
-      burstConfetti(70);
-      goTo('scene2');
-      chibiSay('Ước một điều ước rồi thổi nến nha~ 💨');
-    }, 650);
+  // step 1 → 2: open gift
+  document.getElementById('gift').addEventListener('click', () => {
+    burstConfetti(70);
+    goTo('scene2');
   });
 
   // step 2: blow candles one by one, then → 3
@@ -550,14 +438,12 @@
       sparkleBurst();
       burstConfetti(150);
       toLetter.classList.remove('hidden');
-      chibiSay('Giỏi quáaa! Mở thư ra đọc thôi 💌');
     }, candles.length * 450 + 300);
   });
 
   toLetter.addEventListener('click', () => {
     goTo('scene3');
     revealNextPara();
-    chibiSay('Đọc từ từ thôi nha, xúc động lắm á 🥺');
   });
 
   // step 3: reveal paragraphs one by one, then → 4
@@ -572,7 +458,6 @@
     }
     if (paraIdx >= paras.length) {
       nextParaBtn.textContent = 'Còn một điều cuối cùng… 💝';
-      chibiSay('Hết thư rồi… mà khoan, còn nữa á! 👀');
     }
   }
   nextParaBtn.addEventListener('click', () => {
@@ -581,7 +466,6 @@
     } else {
       goTo('scene4');
       burstConfetti(180);
-      chibiSay('Yayyy! Sinh nhật vui vẻ nha Vy! 🎉🎂');
     }
   });
 
@@ -614,10 +498,6 @@
     paraIdx = 0;
     paras.forEach(p => p.classList.remove('show'));
     nextParaBtn.textContent = 'Đọc tiếp nè 👉';
-    opened = false;
-    gift.classList.remove('open');
-    gift.style.animation = '';
-    chibiSay('Hí hí~ chạm vào hộp quà đi nè! 🎁');
     goTo('scene1');
   });
 </script>
